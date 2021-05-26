@@ -11,3 +11,9 @@ class attendance(models.Model):
 class Student(models.Model):
     usn = models.TextField(max_length=30, null=False)
     name = models.TextField(max_length=30, default="student_name", null=True)
+
+class info(models.Model):
+    image = models.ImageField(upload_to="Images", null=True)
+    class_name = models.TextField(max_length=30, null=False)
+    teacher = models.TextField(max_length=30, null=False)
+    

@@ -8,17 +8,23 @@ import pickle
 import cv2
 
 
-def func():
+def func(img):
     # construct the argument parser and parse the arguments
+    print(str(img))
 
     # load the known faces and embeddings
     print("[INFO] loading encodings...")
     data = pickle.loads(open(
-        "D:/FYP/backend/_backend/api/encodings.pickle", "rb").read())
+        "D:/FYP/main/backend/_backend/api/encodings.pickle", "rb").read())
 
     # load the input image and convert it from BGR to RGB
+    # image = cv2.imread(
+    #     "D:/FYP/main/backend/_backend/static/images" + str(img) ) 
     image = cv2.imread(
-        "D:/FYP/backend/_backend/api/examples/bg.jpg")
+        "D:/FYP/main/backend/_backend/static/images/Images/myfoto_Yxa8Vot.jpg"  ) 
+
+        #D:\FYP\main\backend\_backend\static\images\Images
+
     rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
     # detect the (x, y)-coordinates of the bounding boxes corresponding
