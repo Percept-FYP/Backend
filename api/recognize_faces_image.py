@@ -15,13 +15,17 @@ def func(img):
     # load the known faces and embeddings
     print("[INFO] loading encodings...")
     data = pickle.loads(open(
-        "D:/FYP/main/backend/_backend/api/encodings.pickle", "rb").read())
+        "D:/FYP/face-recognition-opencv/encodingsf.pickle", "rb").read())
 
     # load the input image and convert it from BGR to RGB
     # image = cv2.imread(
     #     "D:/FYP/main/backend/_backend/static/images" + str(img) ) 
     image = cv2.imread(
-        "D:/FYP/main/backend/_backend/static/images/Images/myfoto_Yxa8Vot.jpg"  ) 
+        "D:/FYP/main/backend/_backend/static/images/"+str(img)  ) 
+    # image = cv2.imread(
+    #     "D:/FYP/face-recognition-opencv/examples/bg1.jpg"  )     
+
+    # D:\FYP\face-recognition-opencv\examples
 
         #D:\FYP\main\backend\_backend\static\images\Images
 
@@ -77,6 +81,6 @@ def func(img):
 
     # show the output image
 
-    #cv2.imshow("Image", image)
+    # cv2.imshow("Image", image)
     cv2.waitKey(0)
     return names
