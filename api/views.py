@@ -1,3 +1,4 @@
+
 from django.shortcuts import render
 from api.recognize_faces_image import func
 from django.http import JsonResponse
@@ -41,13 +42,16 @@ def post(request):
     print("was here")
     data = request.data
 
-    # {"teacher":"teacher_name",   
-    # "subject_code":"17cs05"
+    # {"teacher":"teacher_name",
+    # "class_name":"17phy18",
     # "image":""}
     print(data)
-    
-    CLASS = Class.objects.create(subject=Subject.objects.get(subject_code=data["class_name"]),image=data["image"])
+
+    CLASS = Class.objects.create(subject=Subject.objects.get(
+        subject_code=data["class_name"]), image=data["image"])
     imagee = request.data["image"]
+    id = CLASS.id
+
     # print(imagee)
     # cv2.imshow("Image", imagee)
     serializer = ClassSerializer(CLASS)
@@ -57,27 +61,37 @@ def post(request):
         for e in Student.objects.all().order_by("id"):
             list_all.append(e.usn)
         # print(list_all)
-        infos = info.objects.last()
-        img = infos.image
+
+        img = CLASS.image
+
         print(img)
         # im=PIL.Image.open(imagee)
         # im.show()
         present_list = func(img)
+        print(present_list)
         abs_list = list(set(list_all) - set(present_list)) + \
             list(set(present_list) - set(list_all))
-        class_na = infos.class_name
-        print(type(present_list))
+        class_na = data["class_name"]
+
         present_list = list(set(present_list))
-        present_list.remove('Unknown')
-        abs_list.remove('Unknown')
+        try:
+            present_list.remove('Unknown')
+        except:
+            pass
+        try:
+            abs_list.remove('Unknown')
+        except:
+            pass
         for usn in present_list:
+            print(usn)
             attend = attendance.objects.create(
-                usn=usn, attend="present", class_id=class_na)
+                student=Student.objects.get(usn=usn), attend="present", Class=Class.objects.get(id=id))
         for usn in abs_list:
+            print(usn)
             attend = attendance.objects.create(
-                usn=usn, attend="absent", class_id=class_na)
+                student=Student.objects.get(usn=usn), attend="absent", Class=Class.objects.get(id=id))
         attendances = attendance.objects.filter(
-            class_id=class_na).order_by("usn")
+            Class=id).order_by("student")
         workbook1 = openpyxl.load_workbook(
             'D:/FYP/main/backend/_backend/DB.xlsx')
         worksheet1 = workbook1['Sheet1']
@@ -116,8 +130,11 @@ def post(request):
         wbk.close
     print(abs_list)
     print(present_list)
+    CS = ClassSerializer(instance=CLASS)
+    print(CS.data)
     serializer = AttendanceSerializer(attendances, many=True)
-    return JsonResponse(serializer.data, safe=False)
+    print(serializer.data)
+    return Response(CS.data)
 
 
 @api_view(['POST'])

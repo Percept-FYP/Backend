@@ -1,19 +1,34 @@
 from rest_framework import serializers
-from .models import attendance, info, teacher, Class, attendance, Student
+from .models import attendance, info, teacher, Class, attendance, Student, Subject
 
 
 class StudentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Student
-        fields = '__all__'
+        fields = ["usn"]
+
+
+class SubjectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Subject
+        fields = ['subject_code']
 
 
 class AttendanceSerializer(serializers.ModelSerializer):
-    teacher = StudentSerializer(many=True, read_only=True)
+    student = StudentSerializer(read_only=True)
 
     class Meta:
         model = attendance
-        fields = ['attend', 'time', 'Class']
+        fields = ["student", 'attend', 'time']
+
+
+class ClassSerializer(serializers.ModelSerializer):
+    attendance_set = AttendanceSerializer(many=True)
+    subject = SubjectSerializer()
+
+    class Meta:
+        model = Class
+        fields = ['subject', "id", 'attendance_set']
 
     def create(self, validated_data):
         class_data = validated_data.pop('tracks')
@@ -34,10 +49,3 @@ class TeacherSerializer(serializers.ModelSerializer):
     class Meta:
         model = teacher
         fields = ['name']
-
-
-class ClassSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Class
-        fields = ['teacher','subject','class_id','image']
