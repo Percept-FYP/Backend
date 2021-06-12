@@ -139,11 +139,13 @@ def post(request):
 
 @api_view(['POST'])
 def update(request, cl):
+    print("update")
     print(request.data)
-    attendances = attendance.objects.filter(class_id=cl).delete()
-    serializer = AttendanceSerializer(data=request.data, many=True)
-    print(repr(serializer))
-    if serializer.is_valid():
+    attendances = attendance.objects.filter(Class=cl).delete()
+    serializer = ClassSerializer(data=request.data)
+
+    if serializer.is_valid(raise_exception=True):
+        print(serializer.data)
         print("in serial")
         serializer.save()
         present_list = []

@@ -15,7 +15,7 @@ class SubjectSerializer(serializers.ModelSerializer):
 
 
 class AttendanceSerializer(serializers.ModelSerializer):
-    student = StudentSerializer(read_only=True)
+    student = StudentSerializer()
 
     class Meta:
         model = attendance
@@ -24,18 +24,21 @@ class AttendanceSerializer(serializers.ModelSerializer):
 
 class ClassSerializer(serializers.ModelSerializer):
     attendance_set = AttendanceSerializer(many=True)
-    subject = SubjectSerializer()
+
 
     class Meta:
         model = Class
         fields = ['subject', "id", 'attendance_set']
 
     def create(self, validated_data):
-        class_data = validated_data.pop('tracks')
-        attendance = attendance.objects.create(**validated_data)
-        for class_data in class_data:
-            Class.objects.create(attendance=attendance, **class_data)
-        return attendance
+            attendances_data = validated_data.pop('attendance_set')
+            print("thi s",attendances_data)
+            ClASS = Class.objects.create(**validated_data)
+            for attendance_data in attendances_data:
+                print("thi s",attendance_data)
+                attendance.objects.create(Class=ClASS, **attendance_data)
+            return Class       
+
 
 
 class infoSerializer(serializers.ModelSerializer):
