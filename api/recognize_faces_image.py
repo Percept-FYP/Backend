@@ -19,15 +19,15 @@ def func(img):
 
     # load the input image and convert it from BGR to RGB
     # image = cv2.imread(
-    #     "D:/FYP/main/backend/_backend/static/images" + str(img) ) 
+    #     "D:/FYP/main/backend/_backend/static/images" + str(img) )
     image = cv2.imread(
-        "D:/FYP/main/backend/_backend/static/images/"+str(img)  ) 
+        "D:/FYP/main/backend/_backend/static/images/"+str(img))
     # image = cv2.imread(
-    #     "D:/FYP/face-recognition-opencv/examples/bg1.jpg"  )     
+    #     "D:/FYP/face-recognition-opencv/examples/bg1.jpg"  )
 
     # D:\FYP\face-recognition-opencv\examples
 
-        #D:\FYP\main\backend\_backend\static\images\Images
+    # D:\FYP\main\backend\_backend\static\images\Images
 
     rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 

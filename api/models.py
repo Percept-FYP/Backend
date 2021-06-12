@@ -3,6 +3,12 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 
+class User(AbstractUser):
+    role = models.TextField(max_length=40, null=False, default="student")
+    email = models.EmailField(_('email address'), unique=True)
+    REQUIRED_FIELDS = ['email']
+
+
 class Student(models.Model):
     usn = models.TextField(max_length=30, null=False, unique=True)
     name = models.TextField(max_length=30, default="student_name", null=True)
