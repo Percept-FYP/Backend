@@ -5,6 +5,8 @@ from django.http import JsonResponse
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from api.serializers import AttendanceSerializer, infoSerializer, ClassSerializer
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from api.models import *
 import PIL.Image
 import cv2
@@ -38,7 +40,9 @@ import datetime
 #     return Response(serializer.data)
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def post(request):
+    print(request.user)
     print("was here")
     data = request.data
 
