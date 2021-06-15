@@ -6,7 +6,9 @@ import face_recognition
 import argparse
 import pickle
 import cv2
-
+import os
+from pathlib import Path
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 def func(img):
     # construct the argument parser and parse the arguments
@@ -14,14 +16,13 @@ def func(img):
 
     # load the known faces and embeddings
     print("[INFO] loading encodings...")
-    data = pickle.loads(open(
-        "D:/FYP/face-recognition-opencv/encodingsf.pickle", "rb").read())
+    data = pickle.loads(open(os.path.join(BASE_DIR, 'api\\encodings_fyp.pickle'), "rb").read())
 
     # load the input image and convert it from BGR to RGB
     # image = cv2.imread(
     #     "D:/FYP/main/backend/_backend/static/images" + str(img) )
     image = cv2.imread(
-        "D:/FYP/main/backend/_backend/static/images/"+str(img))
+        os.path.join(BASE_DIR, 'static\\images\\')+str(img))
     # image = cv2.imread(
     #     "D:/FYP/face-recognition-opencv/examples/bg1.jpg"  )
 
@@ -36,7 +37,7 @@ def func(img):
     # for each face
     print("[INFO] recognizing faces...")
     boxes = face_recognition.face_locations(
-        rgb, model="hog")
+        rgb, model="cnn")
     encodings = face_recognition.face_encodings(rgb, boxes)
 
     # initialize the list of names for each face detected
@@ -81,6 +82,6 @@ def func(img):
 
     # show the output image
 
-    # cv2.imshow("Image", image)
+    cv2.imshow("Image", image)
     cv2.waitKey(0)
     return names
