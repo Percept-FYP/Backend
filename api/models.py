@@ -6,6 +6,7 @@ from django.utils.translation import gettext_lazy as _
 class User(AbstractUser):
     role = models.TextField(max_length=40, null=False, default="student")
     email = models.EmailField(_('email address'), unique=True)
+    phone = models.IntegerField(max_length=10, null=True)
     REQUIRED_FIELDS = ['email']
 
 
@@ -23,14 +24,16 @@ class Parents(models.Model):
     name = models.TextField(max_length=30, default="student_name", null=True)
 
     def __str__(self):
-        return f"{self.student.usn}" 
+        return f"{self.student.usn}"
 
 
 class teacher(models.Model):
-    name = models.TextField(max_length=40, unique=True)
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, null=True)
+    designation = models.TextField(max_length=40, unique=True)
 
     def __str__(self):
-        return f"{self.name}"
+        return f"{self.user.username}"
 
 
 class Subject(models.Model):

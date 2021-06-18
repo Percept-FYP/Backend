@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from api.serializers import AttendanceSerializer, infoSerializer, ClassSerializer, RegisterSerializer
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated,AllowAny
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from api.models import *
 import PIL.Image
 import cv2
@@ -49,6 +49,39 @@ def register(request):
         return Response("user created")
     else:
         return Response("not created")
+
+
+# {
+# "id":"1",
+# "first_name":"tejas",
+# "last_name":"gowda",
+# "role":"teacher",
+# "phone":"12345667",
+# "designation":"asst. professor"
+# }
+
+@api_view(['POST'])
+def user_details(request):
+    id = request.data['user_id']
+    first_name = request.data['first_name']
+    last_name = request.data['last_name']
+    role = request.data['role']
+    phone = request.data['phone']
+    try:
+        designation = request.data["designation"]
+    except:
+        designation = "null"
+    user = User.objects.get(id=id)
+    user.first_name = first_name
+    user.last_name = last_name
+    user.role = role
+    user.phone = phone
+    user.save()
+    if user.role == "teacher":
+        Teacher = teacher.objects.create(user=user, designation=designation)
+        print("you are a teacher now")
+
+    return Response("added")
 
 
 @api_view(['POST'])
