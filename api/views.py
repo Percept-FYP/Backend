@@ -52,13 +52,24 @@ def register(request):
 
 
 # {
-# "id":"1",
-# "first_name":"tejas",
-# "last_name":"gowda",
-# "role":"teacher",
-# "phone":"12345667",
-# "designation":"asst. professor"
+#     "id": "1",
+#     "first_name": "tejas",
+#     "last_name": "gowda",
+#     "role": "teacher",
+#     "phone": "12345667",
+#     "designation": "asst. professor"
 # }
+
+
+# {
+# "user_id":"1",
+# "first_name":"SYED",
+# "last_name":"ZAIBAN",
+# "role":"student",
+# "phone":"779576144",
+# "usn":"1JT17CS052"
+# }
+
 
 @api_view(['POST'])
 def user_details(request):
@@ -71,6 +82,10 @@ def user_details(request):
         designation = request.data["designation"]
     except:
         designation = "null"
+    try:
+        usn = request.data['usn']
+    except:
+        usn = "null"
     user = User.objects.get(id=id)
     user.first_name = first_name
     user.last_name = last_name
@@ -79,9 +94,13 @@ def user_details(request):
     user.save()
     if user.role == "teacher":
         Teacher = teacher.objects.create(user=user, designation=designation)
-        print("you are a teacher now")
+        return Response("you are a teacher now")
+    elif user.role == "student" and usn != "null":
 
-    return Response("added")
+        student = Student.objects.create(user=user, usn=usn, name=first_name)
+        return Response("you are a student")
+    else:
+        return Response("no role created")
 
 
 @api_view(['POST'])

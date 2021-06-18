@@ -11,6 +11,8 @@ class User(AbstractUser):
 
 
 class Student(models.Model):
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, null=True)
     usn = models.TextField(max_length=30, null=False, unique=True)
     name = models.TextField(max_length=30, default="student_name", null=True)
 
