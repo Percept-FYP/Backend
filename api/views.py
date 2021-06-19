@@ -62,12 +62,12 @@ def register(request):
 
 
 # {
-# "user_id":"1",
-# "first_name":"SYED",
-# "last_name":"ZAIBAN",
-# "role":"student",
-# "phone":"779576144",
-# "usn":"1JT17CS052"
+#     "user_id": "2",
+#     "first_name": "SYED",
+#     "last_name": "ZAIBAN",
+#     "role": "student",
+#     "phone": "779576144",
+#     "usn": "1JT17CS052"
 # }
 
 
