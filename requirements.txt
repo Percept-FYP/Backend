@@ -33,3 +33,4 @@ six==1.16.0
 sqlparse==0.4.1
 toml==0.10.2
 whitenoise==5.2.0
+opencv-python-headless==4.2.0.32
