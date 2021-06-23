@@ -10,13 +10,15 @@ import os
 from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+
 def func(img):
     # construct the argument parser and parse the arguments
     print(str(img))
 
     # load the known faces and embeddings
     print("[INFO] loading encodings...")
-    data = pickle.loads(open(os.path.join(BASE_DIR, 'api\\encodings_fyp.pickle'), "rb").read())
+    data = pickle.loads(
+        open(os.path.join(BASE_DIR, 'api/encodings_fyp.pickle'), "rb").read())
 
     # load the input image and convert it from BGR to RGB
     # image = cv2.imread(
