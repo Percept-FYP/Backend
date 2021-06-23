@@ -33,7 +33,7 @@ class Parents(models.Model):
 class teacher(models.Model):
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, null=True)
-    designation = models.TextField(max_length=40, unique=True)
+    designation = models.TextField(max_length=40, unique=False)
 
     def __str__(self):
         return f"{self.user.username}"
