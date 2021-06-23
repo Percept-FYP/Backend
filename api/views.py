@@ -45,8 +45,10 @@ def register(request):
     print(serializer)
     if serializer.is_valid(raise_exception=True):
         print("were hered")
+
         serializer.save()
-        return Response("user created")
+        print(serializer.data)
+        return Response(serializer.data)
     else:
         return Response("not created")
 
@@ -58,6 +60,13 @@ def register(request):
 #     "role": "teacher",
 #     "phone": "12345667",
 #     "designation": "asst. professor"
+# }
+
+# {
+# "username":"zaidu",
+# "email":"zaidu@gmail.com",
+# "password":"1234$1234",
+# "password2":"1234$1234"
 # }
 
 
