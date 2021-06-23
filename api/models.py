@@ -5,6 +5,7 @@ from django.utils.translation import gettext_lazy as _
 
 class User(AbstractUser):
     role = models.TextField(max_length=40, null=False, default="student")
+    username = models.TextField(max_length=40, null=True, default="user name")
     email = models.EmailField(_('email address'), unique=True)
     phone = models.IntegerField(max_length=10, null=True)
     REQUIRED_FIELDS = ['email']
