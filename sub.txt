@@ -1,0 +1,6 @@
+{"subject_name":"math",
+"subject_code":"17mat18"}
+
+{"teacher":"tejas",
+    "class_name":"17mat18",
+    "image":""}

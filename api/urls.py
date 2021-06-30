@@ -10,6 +10,7 @@ from rest_framework_simplejwt.views import (
 urlpatterns = [
     # path('test/<str:pk>/', views.test, name="test"),
     path('post', views.post, name="post"),
+    path('subject_create/', views.subject_create, name="subject_create"),
     path('register/', views.register, name="register"),
     path('register/details', views.user_details, name="user_details"),
     path('update/<str:cl>', views.update, name="update"),

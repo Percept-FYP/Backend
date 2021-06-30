@@ -24,7 +24,9 @@ def func(img):
     # image = cv2.imread(
     #     "D:/FYP/main/backend/_backend/static/images" + str(img) )
     image = cv2.imread(
-        os.path.join(BASE_DIR, 'static/images/')+str(img))
+        os.path.join(BASE_DIR, 'static\images\Images\Capture.PNG'))
+    Puth = os.path.join(BASE_DIR, 'static\images\Capture.PNG')
+    print(Puth)
     # image = cv2.imread(
     #     "D:/FYP/face-recognition-opencv/examples/bg1.jpg"  )
 
@@ -85,6 +87,6 @@ def func(img):
 
     # show the output image
 
-    cv2.imshow("Image", image)
+    # cv2.imshow("Image", image)
     cv2.waitKey(0)
     return names

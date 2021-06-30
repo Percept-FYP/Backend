@@ -1,12 +1,17 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django.core.files.base import File
+import os
+from pathlib import Path
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 class User(AbstractUser):
     role = models.TextField(max_length=40, null=False, default="student")
     username = models.TextField(max_length=40, null=True, default="user name")
     email = models.EmailField(_('email address'), unique=True)
+    image = models.ImageField(upload_to="Images", null=True)
     phone = models.IntegerField(max_length=10, null=True)
     REQUIRED_FIELDS = ['email']
 
@@ -44,9 +49,27 @@ class Subject(models.Model):
         teacher, null=True, on_delete=models.CASCADE)
     subject_name = models.TextField(max_length=40, null=True)
     subject_code = models.TextField(max_length=40, null=False)
+    attendance_file = models.FileField(
+        upload_to="records", null=True)
 
     def __str__(self):
         return f"{self.subject_code}"
+
+    @property
+    def fileURL(self):
+        try:
+            url = self.attendance_file.url
+        except:
+            url = ''
+        return url
+
+    # def save(self, *args, **kwargs):
+    #     # and update file path
+    #     f = open(os.path.join(BASE_DIR, 'api\\temp\\somefile1.xlsx'),
+    #              encoding="utf8")
+    #     self.attendance_file.save(
+    #         self.subject_code, File(f), save=False)
+    #     super(Subject, self).save(*args, **kwargs)
 
 
 class Class(models.Model):

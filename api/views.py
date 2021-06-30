@@ -3,15 +3,20 @@ from django.shortcuts import render
 from api.recognize_faces_image import func
 from django.http import JsonResponse
 from rest_framework.response import Response
+from rest_framework.parsers import MultiPartParser, DjangoMultiPartParser
 from rest_framework.decorators import api_view
 from api.serializers import AttendanceSerializer, infoSerializer, ClassSerializer, RegisterSerializer
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, parser_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from api.models import *
 import PIL.Image
 import cv2
 import openpyxl
 import datetime
+from django.core.files.base import File
+import os
+from pathlib import Path
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # Create your views here.
@@ -140,7 +145,9 @@ def post(request):
         # print(list_all)
 
         img = CLASS.image
+        file = CLASS.subject.attendance_file
 
+        print(file)
         print(img)
         # im=PIL.Image.open(imagee)
         # im.show()
@@ -169,8 +176,14 @@ def post(request):
                 student=Student.objects.get(usn=usn), attend="absent", Class=Class.objects.get(id=id))
         attendances = attendance.objects.filter(
             Class=id).order_by("student")
-        workbook1 = openpyxl.load_workbook(
-            'D:/FYP/main/backend/_backend/DB.xlsx')
+        pth = os.path.join(BASE_DIR, str(file))
+        print(pth)
+        if file == '':
+            workbook1 = openpyxl.load_workbook(
+                os.path.join(BASE_DIR, 'DB.xlsx'))
+        else:
+            workbook1 = openpyxl.load_workbook(
+                os.path.join(BASE_DIR, str(file)))
         worksheet1 = workbook1['Sheet1']
         # get the number of columns filled
         ncol = worksheet1.max_column
@@ -180,7 +193,7 @@ def post(request):
 
         # Get the currennt date
         today = datetime.date.today().strftime("%d-%m-%Y")
-        wbkName = 'DB.xlsx'
+        wbkName = str(CLASS.subject)
         wbk = openpyxl.load_workbook(wbkName)
 
         # Loop through the usn and write to the column 1
@@ -205,12 +218,13 @@ def post(request):
         # Save the workbook
         wbk.save(wbkName)
         wbk.close
+
     print(abs_list)
     print(present_list)
     CS = ClassSerializer(instance=CLASS)
     print(CS.data)
-    serializer = AttendanceSerializer(attendances, many=True)
-    print(serializer.data)
+    # serializer = AttendanceSerializer(attendances, many=True)
+    # print(serializer.data)
     return Response(CS.data)
 
 
@@ -271,3 +285,19 @@ def update(request, cl):
         wbk.close
 
     return JsonResponse("updated successfully!", safe=False)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def subject_create(request):
+    Teacher = teacher.objects.get(user=request.user)
+    subject_name = request.data['subject_name']
+    subject_code = request.data['subject_code']
+    wb = openpyxl.Workbook()
+    filename = subject_code + ".xlsx"
+    wb.save(os.path.join(BASE_DIR, 'api\\temp\\'+filename))
+
+    subject = Subject.objects.create(teacher=Teacher,
+                                     subject_name=subject_name, subject_code=subject_code)
+    subject.save()
+    return Response()

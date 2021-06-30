@@ -32,7 +32,7 @@ class ClassSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Class
-        fields = ['subject', "id", 'attendance_set']
+        fields = ['subject', "image", "id", 'attendance_set']
 
     def create(self, validated_data):
         attendances_data = validated_data.pop('attendance_set')
