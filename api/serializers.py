@@ -20,11 +20,11 @@ class SubjectSerializer(serializers.ModelSerializer):
 
 
 class AttendanceSerializer(serializers.ModelSerializer):
-    student = StudentSerializer()
+    student = serializers.StringRelatedField()
 
     class Meta:
         model = attendance
-        fields = ["student", 'attend', 'time']
+        fields = ["student", 'attend', 'time', "id"]
 
 
 class ClassSerializer(serializers.ModelSerializer):

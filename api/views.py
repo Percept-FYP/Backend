@@ -41,7 +41,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 #         attend = attendance.objects.create(usn=usn, attend="absent", class_id=pk)
 #     attendances = attendance.objects.filter(class_id=pk)
 
-#     serializer = AttendanceSerializer(attendances, many=True)
+# serializer = AttendanceSerializer(attendances, many=True)
 #     return Response(serializer.data)
 
 @api_view(['POST'])
@@ -98,6 +98,8 @@ def user_details(request):
         designation = "null"
     try:
         usn = request.data['usn']
+        sem = request.data['sem']
+        branch = request.data['branch']
     except:
         usn = "null"
     user = User.objects.get(id=id)
@@ -146,7 +148,7 @@ def post(request):
 
         img = CLASS.image
         file = CLASS.subject.attendance_file
-
+        print(CLASS.id)
         print(file)
         print(img)
         # im=PIL.Image.open(imagee)
@@ -176,14 +178,14 @@ def post(request):
                 student=Student.objects.get(usn=usn), attend="absent", Class=Class.objects.get(id=id))
         attendances = attendance.objects.filter(
             Class=id).order_by("student")
-        pth = os.path.join(BASE_DIR, str(file))
-        print(pth)
-        if file == '':
-            workbook1 = openpyxl.load_workbook(
-                os.path.join(BASE_DIR, 'DB.xlsx'))
-        else:
-            workbook1 = openpyxl.load_workbook(
-                os.path.join(BASE_DIR, str(file)))
+        pth = os.path.join(BASE_DIR, "static\\media\\")+str(file)
+        p = pth.replace("/", "\\")
+        filename = str(CLASS.subject)
+
+        exl = p.replace("somefile1", filename)
+        print(exl)
+
+        workbook1 = openpyxl.load_workbook(exl)
         worksheet1 = workbook1['Sheet1']
         # get the number of columns filled
         ncol = worksheet1.max_column
@@ -193,7 +195,7 @@ def post(request):
 
         # Get the currennt date
         today = datetime.date.today().strftime("%d-%m-%Y")
-        wbkName = str(CLASS.subject)
+        wbkName = exl
         wbk = openpyxl.load_workbook(wbkName)
 
         # Loop through the usn and write to the column 1
@@ -219,36 +221,93 @@ def post(request):
         wbk.save(wbkName)
         wbk.close
 
+    #     if file == '':
+    #         workbook1 = openpyxl.load_workbook(
+    #             os.path.join(BASE_DIR, 'DB.xlsx'))
+    #     else:
+    #         print("here")
+    #         workbook1 = openpyxl.load_workbook(p)
+    #     worksheet1 = workbook1['Sheet1']
+    #     # get the number of columns filled
+    #     ncol = worksheet1.max_column
+
+    #     row = 0
+    #     column = 0
+
+    #     # Get the currennt date
+    #     today = datetime.date.today().strftime("%d-%m-%Y")
+    #     wbkName = str(CLASS.subject)
+    #     wbk = openpyxl.load_workbook(p)
+
+    #     # Loop through the usn and write to the column 1
+    #     for wks in wbk.worksheets:
+    #         i = 0
+    #         wks.cell(row=i+1, column=1).value = "USN"
+    #         while i < len(list_all):
+    #             wks.cell(row=i+2, column=1).value = list_all[i]
+    #             i += 1
+
+    #     # Check the result names and assign the attendance in the excel sheet
+    #     for wks in wbk.worksheets:
+    #         i = 0
+    #         wks.cell(row=i+1, column=ncol+1).value = today
+    #         while i < len(list_all):
+    #             if list_all[i] in present_list:
+    #                 wks.cell(row=i+2, column=ncol+1).value = "Present"
+    #             else:
+    #                 wks.cell(row=i+2, column=ncol+1).value = "Absent"
+    #             i += 1
+
+    #     # Save the workbook
+    #     subject_code = str(CLASS.subject)
+    #     wbkname = subject_code + '.xlsx'
+    #     wbk.save(wbkname)
+    #     wbk.close()
+    #     CLASS.subject.attendance_file = wbk
+
     print(abs_list)
     print(present_list)
     CS = ClassSerializer(instance=CLASS)
     print(CS.data)
-    # serializer = AttendanceSerializer(attendances, many=True)
-    # print(serializer.data)
+    serializer = AttendanceSerializer(attendances, many=True)
+    print(serializer.data)
     return Response(CS.data)
 
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def update(request, cl):
     print("update")
     print(request.data)
-    attendances = attendance.objects.filter(Class=cl).delete()
-    serializer = ClassSerializer(data=request.data)
-
-    if serializer.is_valid(raise_exception=True):
-        print(serializer.data)
+    # attendances = attendance.objects.filter(Class=cl).delete()
+    attendancse = request.data['attendance_set']
+    print(attendancse)
+    clas = Class.objects.get(id=cl)
+    # serializer = ClassSerializer(instance=clas, data=request.data)
+    for atd in attendancse:
+        print(atd)
+        id = atd['id']
+        isinst = attendance.objects.get(id=id)
+        print(atd)
+        print(isinst)
+        serializer2 = AttendanceSerializer(instance=isinst, data=atd)
+        if serializer2.is_valid():
+            print("in serial")
+            serializer2.save()
+    if serializer2.is_valid():
         print("in serial")
-        serializer.save()
+        serializer2.save()
+        print(serializer2)
         present_list = []
         list_all = []
-        attends = attendance.objects.filter(class_id=cl, attend="present")
+        attends = attendance.objects.filter(Class_id=cl, attend="present")
         for i in attends:
-            present_list.append(i.usn)
-        print(present_list)
+            present_list.append(i.student.usn)
+        print("plist", present_list)
         for e in Student.objects.all():
             list_all.append(e.usn)
         workbook1 = openpyxl.load_workbook(
-            'D:/FYP/main/backend/_backend/DB.xlsx')
+            'D:/FYP/backend/DB.xlsx')
         worksheet1 = workbook1['Sheet1']
         # get the number of columns filled
         ncol = worksheet1.max_column
@@ -272,19 +331,19 @@ def update(request, cl):
         # Check the result names and assign the attendance in the excel sheet
         for wks in wbk.worksheets:
             i = 0
-            wks.cell(row=i+1, column=ncol).value = today
+            wks.cell(row=i+1, column=ncol+1).value = today
             while i < len(list_all):
                 if list_all[i] in present_list:
-                    wks.cell(row=i+2, column=ncol).value = "Present"
+                    wks.cell(row=i+2, column=ncol+1).value = "Present"
                 else:
-                    wks.cell(row=i+2, column=ncol).value = "Absent"
+                    wks.cell(row=i+2, column=ncol+1).value = "Absent"
                 i += 1
 
         # Save the workbook
         wbk.save(wbkName)
         wbk.close
 
-    return JsonResponse("updated successfully!", safe=False)
+    return JsonResponse(serializer2.data, safe=False)
 
 
 @api_view(['POST'])
@@ -293,11 +352,14 @@ def subject_create(request):
     Teacher = teacher.objects.get(user=request.user)
     subject_name = request.data['subject_name']
     subject_code = request.data['subject_code']
-    wb = openpyxl.Workbook()
-    filename = subject_code + ".xlsx"
-    wb.save(os.path.join(BASE_DIR, 'api\\temp\\'+filename))
-
+    file = openpyxl.load_workbook(
+        'D:\\fyp\\Backend\\static\\media\\records\\somefile1.xlsx')
+    filename = 'D:\\fyp\\Backend\\static\\media\\records\\' + subject_code + '.xlsx'
+    file.save(filename)
+    file.close()
+    f = open(filename)
     subject = Subject.objects.create(teacher=Teacher,
                                      subject_name=subject_name, subject_code=subject_code)
+
     subject.save()
     return Response()

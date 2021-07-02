@@ -3,6 +3,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.core.files.base import File
 import os
+import openpyxl
 from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -16,11 +17,18 @@ class User(AbstractUser):
     REQUIRED_FIELDS = ['email']
 
 
+class Academic_info(models.Model):
+    semester = models.TextField(max_length=30, null=False)
+    branch = models.TextField(max_length=30, null=False, unique=True)
+
+
 class Student(models.Model):
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, null=True)
     usn = models.TextField(max_length=30, null=False, unique=True)
     name = models.TextField(max_length=30, default="student_name", null=True)
+    academic_info = models.ForeignKey(
+        Academic_info, null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.usn}"
@@ -47,10 +55,12 @@ class teacher(models.Model):
 class Subject(models.Model):
     teacher = models.ForeignKey(
         teacher, null=True, on_delete=models.CASCADE)
+    academic_info = models.ForeignKey(
+        Academic_info, null=True, on_delete=models.CASCADE)
     subject_name = models.TextField(max_length=40, null=True)
     subject_code = models.TextField(max_length=40, null=False)
     attendance_file = models.FileField(
-        upload_to="records", null=True)
+        upload_to="records", null=True, default='records/somefile1.xlsx')
 
     def __str__(self):
         return f"{self.subject_code}"
@@ -65,8 +75,10 @@ class Subject(models.Model):
 
     # def save(self, *args, **kwargs):
     #     # and update file path
-    #     f = open(os.path.join(BASE_DIR, 'api\\temp\\somefile1.xlsx'),
-    #              encoding="utf8")
+    #     pth = str(os.path.join(
+    #         BASE_DIR, 'static\\media\\records\\somefile1.xlsx'))
+    #     print("path", pth)
+    #     f = openpyxl.load_workbook(pth)
     #     self.attendance_file.save(
     #         self.subject_code, File(f), save=False)
     #     super(Subject, self).save(*args, **kwargs)
@@ -78,7 +90,7 @@ class Class(models.Model):
     image = models.ImageField(upload_to="Images", null=True)
 
     def __str__(self):
-        return f"{self.subject.subject_code}"
+        return f"{self.id}"
 
 
 class attendance(models.Model):

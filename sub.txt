@@ -4,3 +4,44 @@
 {"teacher":"tejas",
     "class_name":"17mat18",
     "image":""}
+
+
+{
+    "subject": 15,
+    "image": null,
+    "id": 83,
+    "attendance_set": [
+        {
+            "student": {
+                "usn": "1JT17CS052"
+            },
+            "attend": "absent",
+            "time": "2021-07-02T11:40:01.550814Z",
+            "id": 227
+        },
+        {
+            "student": {
+                "usn": "1JT17CS050"
+            },
+            "attend": "absent",
+            "time": "2021-07-02T11:40:01.785173Z",
+            "id": 228
+        },
+        {
+            "student": {
+                "usn": "1JT17CS053"
+            },
+            "attend": "absent",
+            "time": "2021-07-02T11:40:01.973841Z",
+            "id": 229
+        },
+        {
+            "student": {
+                "usn": "1JT17CS049"
+            },
+            "attend": "absent",
+            "time": "2021-07-02T11:40:02.180013Z",
+            "id": 230
+        }
+    ]
+}

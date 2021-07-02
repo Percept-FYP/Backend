@@ -24,7 +24,7 @@ def func(img):
     # image = cv2.imread(
     #     "D:/FYP/main/backend/_backend/static/images" + str(img) )
     image = cv2.imread(
-        os.path.join(BASE_DIR, 'static\images\Images\Capture.PNG'))
+        os.path.join(BASE_DIR, 'static\images\Images\Capture.png'))
     Puth = os.path.join(BASE_DIR, 'static\images\Capture.PNG')
     print(Puth)
     # image = cv2.imread(
