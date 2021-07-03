@@ -5,6 +5,17 @@
     "class_name":"17mat18",
     "image":""}
 
+{
+    "user_id": "9",
+    "first_name": "SYED",
+    "last_name": "ZAIBAN",
+    "role": "student",
+    "phone": "779576144",
+    "usn": "1JT17CS058",
+    "sem":"7th",
+    "branch":"CSE"
+}
+
 
 {
     "subject": 15,

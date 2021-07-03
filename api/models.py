@@ -18,8 +18,12 @@ class User(AbstractUser):
 
 
 class Academic_info(models.Model):
-    semester = models.TextField(max_length=30, null=False)
-    branch = models.TextField(max_length=30, null=False, unique=True)
+    semester = models.TextField(max_length=8, null=False)
+    branch = models.TextField(max_length=20, null=False, unique=True)
+
+    def __str__(self):+
+    
+        return f"{self.semester}" + f" {self.branch}"
 
 
 class Student(models.Model):

@@ -23,10 +23,12 @@ def func(img):
     # load the input image and convert it from BGR to RGB
     # image = cv2.imread(
     #     "D:/FYP/main/backend/_backend/static/images" + str(img) )
-    image = cv2.imread(
-        os.path.join(BASE_DIR, 'static\images\Images\Capture.png'))
-    Puth = os.path.join(BASE_DIR, 'static\images\Capture.PNG')
-    print(Puth)
+     if img != "":
+        image = cv2.imread(
+            os.path.join(BASE_DIR, 'static\\images\\')+str(img))
+    else:
+            image = cv2.imread(
+            os.path.join(BASE_DIR, 'static\\images\\syed.png'))
     # image = cv2.imread(
     #     "D:/FYP/face-recognition-opencv/examples/bg1.jpg"  )
 

@@ -113,7 +113,11 @@ def user_details(request):
         return Response("you are a teacher now")
     elif user.role == "student" and usn != "null":
 
-        student = Student.objects.create(user=user, usn=usn, name=first_name)
+        student = Student.objects.create(
+            user=user, usn=usn, name=first_name, academic_info=Academic_info.objects.get(branch=branch))
+        student.academic_info.semester = sem
+
+        student.save()
         return Response("you are a student")
     else:
         return Response("no role created")
@@ -352,6 +356,8 @@ def subject_create(request):
     Teacher = teacher.objects.get(user=request.user)
     subject_name = request.data['subject_name']
     subject_code = request.data['subject_code']
+    sem = request.data['sem']
+    branch = request.data['branch']
     file = openpyxl.load_workbook(
         'D:\\fyp\\Backend\\static\\media\\records\\somefile1.xlsx')
     filename = 'D:\\fyp\\Backend\\static\\media\\records\\' + subject_code + '.xlsx'
@@ -359,7 +365,8 @@ def subject_create(request):
     file.close()
     f = open(filename)
     subject = Subject.objects.create(teacher=Teacher,
-                                     subject_name=subject_name, subject_code=subject_code)
+                                     subject_name=subject_name, subject_code=subject_code, academic_info=Academic_info.objects.get(branch=branch))
+    subject.academic_info.semester = sem
 
     subject.save()
-    return Response()
+    return Response("subject added")
