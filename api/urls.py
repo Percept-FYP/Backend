@@ -11,6 +11,7 @@ urlpatterns = [
     # path('test/<str:pk>/', views.test, name="test"),
     path('post', views.post, name="post"),
     path('subject_create/', views.subject_create, name="subject_create"),
+    path('subjects/', views.subjects, name="subjects"),
     path('register/', views.register, name="register"),
     path('register/details', views.user_details, name="user_details"),
     path('update/<str:cl>', views.update, name="update"),

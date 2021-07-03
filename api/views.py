@@ -5,7 +5,7 @@ from django.http import JsonResponse
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, DjangoMultiPartParser
 from rest_framework.decorators import api_view
-from api.serializers import AttendanceSerializer, infoSerializer, ClassSerializer, RegisterSerializer
+from api.serializers import AttendanceSerializer, infoSerializer, ClassSerializer, RegisterSerializer, SubjectsSerializer
 from rest_framework.decorators import api_view, permission_classes, parser_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from api.models import *
@@ -358,15 +358,39 @@ def subject_create(request):
     subject_code = request.data['subject_code']
     sem = request.data['sem']
     branch = request.data['branch']
-    file = openpyxl.load_workbook(
-        'D:\\fyp\\Backend\\static\\media\\records\\somefile1.xlsx')
-    filename = 'D:\\fyp\\Backend\\static\\media\\records\\' + subject_code + '.xlsx'
-    file.save(filename)
-    file.close()
-    f = open(filename)
+    # file = openpyxl.load_workbook(
+    #     'D:\\fyp\\Backend\\static\\media\\records\\somefile1.xlsx')
+    # filename = 'D:\\fyp\\Backend\\static\\media\\records\\' + subject_code + '.xlsx'
+    # file.save(filename)
+    # file.close()
+    # f = open(filename)
     subject = Subject.objects.create(teacher=Teacher,
                                      subject_name=subject_name, subject_code=subject_code, academic_info=Academic_info.objects.get(branch=branch))
     subject.academic_info.semester = sem
 
     subject.save()
     return Response("subject added")
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def subjects(request):
+    if request.user.role == "teacher":
+        print('teacher')
+        subjects = Subject.objects.filter(
+            teacher=teacher.objects.get(user=request.user))
+        print(subjects)
+        serializer = SubjectsSerializer(subjects, many=True)
+        return Response(serializer.data)
+    elif request.user.role == "student":
+        print('students')
+        student = Student.objects.get(user=request.user)
+        academic_info = student.academic_info
+        subjects = Subject.objects.filter(
+            academic_info=academic_info)
+        print(subjects)
+        serializer = SubjectsSerializer(subjects, many=True)
+        return Response(serializer.data)
+    else:
+        print('no role')
+        return Response("no role set")
