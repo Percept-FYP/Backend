@@ -91,6 +91,6 @@ def func(img):
 
     # show the output image
 
-    # cv2.imshow("Image", image)
+    cv2.imshow("Image", image)
     cv2.waitKey(0)
     return names

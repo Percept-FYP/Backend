@@ -50,7 +50,8 @@ class Parents(models.Model):
 class teacher(models.Model):
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, null=True)
-    designation = models.TextField(max_length=40, unique=False)
+    designation = models.TextField(
+        max_length=40, unique=False, default="no designation")
 
     def __str__(self):
         return f"{self.user.username}"
@@ -94,7 +95,7 @@ class Class(models.Model):
     image = models.ImageField(upload_to="Images", null=True)
 
     def __str__(self):
-        return f"{self.id}"
+        return f"{self.id}"+f"_{self.subject.subject_code}"
 
 
 class attendance(models.Model):
