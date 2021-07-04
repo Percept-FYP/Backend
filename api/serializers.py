@@ -56,6 +56,14 @@ class TeacherSerializer(serializers.ModelSerializer):
         model = teacher
         fields = ['name']
 
+
+class SubjectsSerializer(serializers.ModelSerializer):
+    teacher = serializers.StringRelatedField()
+    academic_info = serializers.StringRelatedField()
+
+    class Meta:
+        model = Subject
+        fields = '__all__'
 ####################
 
 

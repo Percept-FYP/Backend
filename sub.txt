@@ -1,5 +1,9 @@
-{"subject_name":"math",
-"subject_code":"17mat18"}
+{"subject_name":"ELE",
+"subject_code":"17ELE18",
+ "sem":"7th",
+  "branch":"CSE"
+
+}
 
 {"teacher":"tejas",
     "class_name":"17mat18",
