@@ -23,11 +23,11 @@ def func(img):
     # load the input image and convert it from BGR to RGB
     # image = cv2.imread(
     #     "D:/FYP/main/backend/_backend/static/images" + str(img) )
-     if img != "":
+    if img != "":
         image = cv2.imread(
-            os.path.join(BASE_DIR, 'static\\images\\')+str(img))
+            os.path.join(BASE_DIR, 'static\\media\\')+str(img))
     else:
-            image = cv2.imread(
+          image = cv2.imread(
             os.path.join(BASE_DIR, 'static\\images\\syed.png'))
     # image = cv2.imread(
     #     "D:/FYP/face-recognition-opencv/examples/bg1.jpg"  )
@@ -43,7 +43,7 @@ def func(img):
     # for each face
     print("[INFO] recognizing faces...")
     boxes = face_recognition.face_locations(
-        rgb, model="cnn")
+        rgb, model="hog")
     encodings = face_recognition.face_encodings(rgb, boxes)
 
     # initialize the list of names for each face detected
@@ -89,6 +89,6 @@ def func(img):
 
     # show the output image
 
-    # cv2.imshow("Image", image)
+    cv2.imshow("Image", image)
     cv2.waitKey(0)
     return names
