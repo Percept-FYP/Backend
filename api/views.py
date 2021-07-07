@@ -5,44 +5,19 @@ from django.http import JsonResponse
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, DjangoMultiPartParser
 from rest_framework.decorators import api_view
-from api.serializers import AttendanceSerializer, infoSerializer, ClassSerializer, RegisterSerializer, SubjectsSerializer
+from api.serializers import AttendanceSerializer, ClassSerializer, RegisterSerializer, SubjectsSerializer
 from rest_framework.decorators import api_view, permission_classes, parser_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from api.models import *
 import PIL.Image
-import cv2
 import openpyxl
 import datetime
 from django.core.files.base import File
 import os
 from pathlib import Path
+from rest_framework import status
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# Create your views here.
-
-
-# @api_view(['GET'])
-# def test(request, pk="A2"):
-#     list = func()
-#     print(list)
-#     print(len(list))
-#     list_all = []
-
-#     for e in Student.objects.all():
-#         list_all.append(e.usn)
-#     print(list_all)
-#     abs_list = set(list) ^ set(list_all)
-#     print(abs_list)
-#     for usn in list:
-#         attend = attendance.objects.create(
-#             usn=usn, attend="present", class_id=pk)
-#     for usn in abs_list:
-#         attend = attendance.objects.create(usn=usn, attend="absent", class_id=pk)
-#     attendances = attendance.objects.filter(class_id=pk)
-
-# serializer = AttendanceSerializer(attendances, many=True)
-#     return Response(serializer.data)
 
 @api_view(['POST'])
 def register(request):
@@ -56,33 +31,6 @@ def register(request):
         return Response(serializer.data)
     else:
         return Response("not created")
-
-
-# {
-#     "id": "1",
-#     "first_name": "tejas",
-#     "last_name": "gowda",
-#     "role": "teacher",
-#     "phone": "12345667",
-#     "designation": "asst. professor"
-# }
-
-# {
-# "username":"zaidu",
-# "email":"zaidu@gmail.com",
-# "password":"1234$1234",
-# "password2":"1234$1234"
-# }
-
-
-# {
-#     "user_id": "2",
-#     "first_name": "SYED",
-#     "last_name": "ZAIBAN",
-#     "role": "student",
-#     "phone": "779576144",
-#     "usn": "1JT17CS052"
-# }
 
 
 @api_view(['POST'])
@@ -126,37 +74,19 @@ def user_details(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def post(request):
-    print(request.user)
-    print("was here")
     data = request.data
-
-    # {"teacher":"teacher_name",
-    # "class_name":"17phy18",
-    # "image":""}
-    print(data)
-
     CLASS = Class.objects.create(subject=Subject.objects.get(
         subject_code=data["class_name"]), image=data["image"])
     imagee = request.data["image"]
     id = CLASS.id
-
-    # print(imagee)
-    # cv2.imshow("Image", imagee)
     serializer = ClassSerializer(CLASS)
     if serializer:
         print("valid")
         list_all = []
         for e in Student.objects.all().order_by("id"):
             list_all.append(e.usn)
-        # print(list_all)
-
         img = CLASS.image
         file = CLASS.subject.attendance_file
-        print(CLASS.id)
-        print(file)
-        print(img)
-        # im=PIL.Image.open(imagee)
-        # im.show()
         present_list = func(img)
         print(present_list)
         abs_list = list(set(list_all) - set(present_list)) + \
@@ -225,50 +155,6 @@ def post(request):
         wbk.save(wbkName)
         wbk.close
 
-    #     if file == '':
-    #         workbook1 = openpyxl.load_workbook(
-    #             os.path.join(BASE_DIR, 'DB.xlsx'))
-    #     else:
-    #         print("here")
-    #         workbook1 = openpyxl.load_workbook(p)
-    #     worksheet1 = workbook1['Sheet1']
-    #     # get the number of columns filled
-    #     ncol = worksheet1.max_column
-
-    #     row = 0
-    #     column = 0
-
-    #     # Get the currennt date
-    #     today = datetime.date.today().strftime("%d-%m-%Y")
-    #     wbkName = str(CLASS.subject)
-    #     wbk = openpyxl.load_workbook(p)
-
-    #     # Loop through the usn and write to the column 1
-    #     for wks in wbk.worksheets:
-    #         i = 0
-    #         wks.cell(row=i+1, column=1).value = "USN"
-    #         while i < len(list_all):
-    #             wks.cell(row=i+2, column=1).value = list_all[i]
-    #             i += 1
-
-    #     # Check the result names and assign the attendance in the excel sheet
-    #     for wks in wbk.worksheets:
-    #         i = 0
-    #         wks.cell(row=i+1, column=ncol+1).value = today
-    #         while i < len(list_all):
-    #             if list_all[i] in present_list:
-    #                 wks.cell(row=i+2, column=ncol+1).value = "Present"
-    #             else:
-    #                 wks.cell(row=i+2, column=ncol+1).value = "Absent"
-    #             i += 1
-
-    #     # Save the workbook
-    #     subject_code = str(CLASS.subject)
-    #     wbkname = subject_code + '.xlsx'
-    #     wbk.save(wbkname)
-    #     wbk.close()
-    #     CLASS.subject.attendance_file = wbk
-
     print(abs_list)
     print(present_list)
     CS = ClassSerializer(instance=CLASS)
@@ -281,33 +167,23 @@ def post(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def update(request, cl):
-    print("update")
-    print(request.data)
     # attendances = attendance.objects.filter(Class=cl).delete()
     attendancse = request.data['attendance_set']
-    print(attendancse)
     clas = Class.objects.get(id=cl)
     # serializer = ClassSerializer(instance=clas, data=request.data)
     for atd in attendancse:
-        print(atd)
         id = atd['id']
         isinst = attendance.objects.get(id=id)
-        print(atd)
-        print(isinst)
         serializer2 = AttendanceSerializer(instance=isinst, data=atd)
         if serializer2.is_valid():
-            print("in serial")
             serializer2.save()
     if serializer2.is_valid():
-        print("in serial")
         serializer2.save()
-        print(serializer2)
         present_list = []
         list_all = []
         attends = attendance.objects.filter(Class_id=cl, attend="present")
         for i in attends:
             present_list.append(i.student.usn)
-        print("plist", present_list)
         for e in Student.objects.all():
             list_all.append(e.usn)
         workbook1 = openpyxl.load_workbook(
@@ -347,7 +223,7 @@ def update(request, cl):
         wbk.save(wbkName)
         wbk.close
 
-    return JsonResponse(serializer2.data, safe=False)
+    return Response("Sucessgully Updated", status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])
@@ -388,3 +264,35 @@ def subjects(request):
     else:
         print('no role')
         return Response("no role set")
+
+
+@api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
+def attendance_details(request, cl):
+
+    if request.method == 'GET':
+        user = request.user
+        student = Student.objects.get(user=user)
+        Clasess = Class.objects.filter(
+            subject=Subject.objects.get(subject_code=cl))
+        attendances = []
+        for CLASS in Clasess:
+            Attendance = attendance.objects.filter(
+                student=student, Class=CLASS)
+            serializer = AttendanceSerializer(Attendance, many=True)
+            attendances.append(serializer.data)
+        return Response(attendances)
+
+    elif request.method == 'POST':
+        usn = request.data['usn']
+        student = Student.objects.get(usn=usn)
+        Clasess = Class.objects.filter(
+            subject=Subject.objects.get(subject_code=cl))
+        attendances = []
+        for CLASS in Clasess:
+            Attendance = attendance.objects.filter(
+                student=student, Class=CLASS)
+            serializer = AttendanceSerializer(Attendance, many=True)
+            attendances.append(serializer.data)
+
+        return Response(attendances, status=status.HTTP_200_OK)

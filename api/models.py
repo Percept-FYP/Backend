@@ -9,17 +9,21 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 class User(AbstractUser):
-    role = models.TextField(max_length=40, null=False, default="student")
-    username = models.TextField(max_length=40, null=True, default="user name")
+    role = models.CharField(max_length=40, null=False, default="student")
+    username = models.CharField(max_length=40, null=True, default="user name")
     email = models.EmailField(_('email address'), unique=True)
     image = models.ImageField(upload_to="Images", null=True)
-    phone = models.IntegerField(max_length=10, null=True)
+    phone = models.IntegerField(null=True)
     REQUIRED_FIELDS = ['email']
 
 
 class Academic_info(models.Model):
-    semester = models.TextField(max_length=8, null=False)
-    branch = models.TextField(max_length=20, null=False, unique=True)
+    semester = models.CharField(max_length=20, null=False, unique=True)
+    branch = models.CharField(max_length=60, null=False, unique=True)
+    scheme = models.IntegerField(null=True)
+
+    class meta:
+        unique_together = [['semester', 'branch']]
 
     def __str__(self):
 
@@ -29,8 +33,8 @@ class Academic_info(models.Model):
 class Student(models.Model):
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, null=True)
-    usn = models.TextField(max_length=30, null=False, unique=True)
-    name = models.TextField(max_length=30, default="student_name", null=True)
+    usn = models.CharField(max_length=40, null=False, unique=True)
+    name = models.CharField(max_length=40, default="student_name", null=True)
     academic_info = models.ForeignKey(
         Academic_info, null=True, on_delete=models.CASCADE)
 
@@ -41,7 +45,7 @@ class Student(models.Model):
 class Parents(models.Model):
     student = models.OneToOneField(
         Student, on_delete=models.CASCADE, null=False, primary_key=True)
-    name = models.TextField(max_length=30, default="student_name", null=True)
+    name = models.CharField(max_length=40, default="student_name", null=True)
 
     def __str__(self):
         return f"{self.student.usn}"
@@ -50,7 +54,7 @@ class Parents(models.Model):
 class teacher(models.Model):
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, null=True)
-    designation = models.TextField(
+    designation = models.CharField(
         max_length=40, unique=False, default="no designation")
 
     def __str__(self):
@@ -62,8 +66,8 @@ class Subject(models.Model):
         teacher, null=True, on_delete=models.CASCADE)
     academic_info = models.ForeignKey(
         Academic_info, null=True, on_delete=models.CASCADE)
-    subject_name = models.TextField(max_length=40, null=True)
-    subject_code = models.TextField(max_length=40, null=False)
+    subject_name = models.CharField(max_length=40, null=True)
+    subject_code = models.CharField(max_length=40, null=False, unique=True)
     attendance_file = models.FileField(
         upload_to="records", null=True, default='records/somefile1.xlsx')
 
@@ -78,16 +82,6 @@ class Subject(models.Model):
             url = ''
         return url
 
-    # def save(self, *args, **kwargs):
-    #     # and update file path
-    #     pth = str(os.path.join(
-    #         BASE_DIR, 'static\\media\\records\\somefile1.xlsx'))
-    #     print("path", pth)
-    #     f = openpyxl.load_workbook(pth)
-    #     self.attendance_file.save(
-    #         self.subject_code, File(f), save=False)
-    #     super(Subject, self).save(*args, **kwargs)
-
 
 class Class(models.Model):
     subject = models.ForeignKey(
@@ -100,15 +94,9 @@ class Class(models.Model):
 
 class attendance(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    attend = models.TextField(max_length=30, default="absent", null=True)
+    attend = models.CharField(max_length=40, default="absent", null=True)
     time = models.DateTimeField(auto_now_add=True, null=True)
     Class = models.ForeignKey(Class, on_delete=models.DO_NOTHING, null=True)
 
     def __str__(self):
         return f"{self.student.usn}"
-
-
-class info(models.Model):
-    image = models.ImageField(upload_to="Images", null=True)
-    class_name = models.TextField(max_length=30, null=False)
-    teacher = models.TextField(max_length=30, null=False)

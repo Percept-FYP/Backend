@@ -6,8 +6,10 @@
 }
 
 {"teacher":"tejas",
-    "class_name":"17mat18",
+    "class_name":"17CO18",
     "image":""}
+
+
 
 {
     "user_id": "9",

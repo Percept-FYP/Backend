@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import attendance, info, teacher, Class, attendance, Student, Subject, User
+from .models import attendance, teacher, Class, attendance, Student, Subject, User
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -42,12 +42,6 @@ class ClassSerializer(serializers.ModelSerializer):
             print("thi s", attendance_data)
             attendance.objects.create(Class=ClASS, **attendance_data)
         return Class
-
-
-class infoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = info
-        fields = '__all__'
 
 
 class TeacherSerializer(serializers.ModelSerializer):
