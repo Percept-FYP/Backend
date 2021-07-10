@@ -5,7 +5,21 @@ from django.core.files.base import File
 import os
 import openpyxl
 from pathlib import Path
+from django.db.models.constraints import UniqueConstraint
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+class Academic_info(models.Model):
+    semester = models.CharField(max_length=20, null=False)
+    branch = models.CharField(max_length=60, null=False)
+    scheme = models.IntegerField(null=True)
+
+    def __str__(self):
+
+        return f"{self.semester}" + f" {self.branch}"
+
+    class meta:
+        unique_together = [['semester', 'branch']]
 
 
 class User(AbstractUser):
@@ -15,19 +29,6 @@ class User(AbstractUser):
     image = models.ImageField(upload_to="Images", null=True)
     phone = models.IntegerField(null=True)
     REQUIRED_FIELDS = ['email']
-
-
-class Academic_info(models.Model):
-    semester = models.CharField(max_length=20, null=False, unique=True)
-    branch = models.CharField(max_length=60, null=False, unique=True)
-    scheme = models.IntegerField(null=True)
-
-    class meta:
-        unique_together = [['semester', 'branch']]
-
-    def __str__(self):
-
-        return f"{self.semester}" + f" {self.branch}"
 
 
 class Student(models.Model):
@@ -82,6 +83,20 @@ class Subject(models.Model):
             url = ''
         return url
 
+
+class Time_table(models.Model):
+    day = models.IntegerField(max_length=20, null=True)
+    slot = models.IntegerField(max_length=15, null=True)
+    time = "10-11"
+
+    class meta:
+        UniqueConstraint(fields=['day', 'slot'], name='unique_slot')
+
+    def __str__(self):
+        return f"{self.subject.academic_info}"
+
+
+#
 
 class Class(models.Model):
     subject = models.ForeignKey(

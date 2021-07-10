@@ -296,3 +296,48 @@ def attendance_details(request, cl):
             attendances.append(serializer.data)
 
         return Response(attendances, status=status.HTTP_200_OK)
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def attendance_overview(request):
+    user = request.user
+    student = Student.objects.get(user=user)
+    Academic_info = student.academic_info
+    subjects = Subject.objects.filter(academic_info=Academic_info)
+    result_set = []
+    for subject in subjects:
+        present_count = 0
+        absent_count = 0
+        all = 0
+        Clasess = Class.objects.filter(
+            subject=subject)
+        for CLASS in Clasess:
+            print(CLASS)
+            all = all + 1
+
+            present_count = present_count + attendance.objects.filter(
+                student=student, Class=CLASS, attend="present").count()
+            print(present_count)
+            absent_count = absent_count + attendance.objects.filter(
+                student=student, Class=CLASS, attend="absent").count()
+            print(absent_count)
+
+        print("subject:", str(subject), "present:", present_count,
+              "absent:", absent_count)
+        print("total", present_count+absent_count)
+        if present_count > 0:
+            # have to change!
+            percentage = (present_count/(present_count+absent_count))*100
+        else:
+            percentage = 0
+        result = {
+            "subject": str(subject),
+            "classes attended":  present_count,
+            "classes taken": all,
+            "%": round(percentage, 2)
+        }
+        result_set.append(result)
+    attendances_overview = []
+
+    return Response(result_set)

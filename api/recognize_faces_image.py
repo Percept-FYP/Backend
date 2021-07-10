@@ -30,7 +30,7 @@ def func(img):
     else:
         print("smh")
         image = cv2.imread(
-            os.path.join(BASE_DIR, 'static\\media\\Images\\syed.png'))
+            os.path.join(BASE_DIR, 'static\\media\\Images\\supreetha.png'))
     # image = cv2.imread(
     #     "D:/FYP/face-recognition-opencv/examples/bg1.jpg"  )
 
