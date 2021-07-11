@@ -127,7 +127,7 @@ def user_details(request):
 @permission_classes([IsAuthenticated])
 def post(request):
     print(request.user)
-    print("was here")
+ 
     data = request.data
 
     # {"teacher":"teacher_name",
@@ -151,7 +151,7 @@ def post(request):
         # print(list_all)
 
         img = CLASS.image
-        file = CLASS.subject.attendance_file
+        file = CLASS.subject.attendance_file  #records/somefile.xls
         print(CLASS.id)
         print(file)
         print(img)
@@ -173,11 +173,11 @@ def post(request):
         except:
             pass
         for usn in present_list:
-            print(usn)
+         
             attend = attendance.objects.create(
                 student=Student.objects.get(usn=usn), attend="present", Class=Class.objects.get(id=id))
         for usn in abs_list:
-            print(usn)
+     
             attend = attendance.objects.create(
                 student=Student.objects.get(usn=usn), attend="absent", Class=Class.objects.get(id=id))
         attendances = attendance.objects.filter(
@@ -187,7 +187,7 @@ def post(request):
         filename = str(CLASS.subject)
 
         exl = p.replace("somefile1", filename)
-        print(exl)
+        
 
         workbook1 = openpyxl.load_workbook(exl)
         worksheet1 = workbook1['Sheet1']
@@ -225,61 +225,16 @@ def post(request):
         wbk.save(wbkName)
         wbk.close
 
-    #     if file == '':
-    #         workbook1 = openpyxl.load_workbook(
-    #             os.path.join(BASE_DIR, 'DB.xlsx'))
-    #     else:
-    #         print("here")
-    #         workbook1 = openpyxl.load_workbook(p)
-    #     worksheet1 = workbook1['Sheet1']
-    #     # get the number of columns filled
-    #     ncol = worksheet1.max_column
-
-    #     row = 0
-    #     column = 0
-
-    #     # Get the currennt date
-    #     today = datetime.date.today().strftime("%d-%m-%Y")
-    #     wbkName = str(CLASS.subject)
-    #     wbk = openpyxl.load_workbook(p)
-
-    #     # Loop through the usn and write to the column 1
-    #     for wks in wbk.worksheets:
-    #         i = 0
-    #         wks.cell(row=i+1, column=1).value = "USN"
-    #         while i < len(list_all):
-    #             wks.cell(row=i+2, column=1).value = list_all[i]
-    #             i += 1
-
-    #     # Check the result names and assign the attendance in the excel sheet
-    #     for wks in wbk.worksheets:
-    #         i = 0
-    #         wks.cell(row=i+1, column=ncol+1).value = today
-    #         while i < len(list_all):
-    #             if list_all[i] in present_list:
-    #                 wks.cell(row=i+2, column=ncol+1).value = "Present"
-    #             else:
-    #                 wks.cell(row=i+2, column=ncol+1).value = "Absent"
-    #             i += 1
-
-    #     # Save the workbook
-    #     subject_code = str(CLASS.subject)
-    #     wbkname = subject_code + '.xlsx'
-    #     wbk.save(wbkname)
-    #     wbk.close()
-    #     CLASS.subject.attendance_file = wbk
-
-    print(abs_list)
-    print(present_list)
+    
     CS = ClassSerializer(instance=CLASS)
-    print(CS.data)
+  
     serializer = AttendanceSerializer(attendances, many=True)
-    print(serializer.data)
+
     return Response(CS.data)
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([AllowAny])
 def update(request, cl):
     print("update")
     print(request.data)
@@ -311,14 +266,14 @@ def update(request, cl):
         for e in Student.objects.all():
             list_all.append(e.usn)
         workbook1 = openpyxl.load_workbook(
-            'D:/FYP/backend/DB.xlsx')
+            'D:/FYP/main/backend/_backend/DB.xlsx')
         worksheet1 = workbook1['Sheet1']
         # get the number of columns filled
         ncol = worksheet1.max_column
 
         row = 0
         column = 0
-
+       
         # Get the currennt date
         today = datetime.date.today().strftime("%d-%m-%Y")
         wbkName = 'DB.xlsx'
@@ -347,7 +302,7 @@ def update(request, cl):
         wbk.save(wbkName)
         wbk.close
 
-    return JsonResponse(serializer2.data, safe=False)
+    return Response(serializer2.data)
 
 
 @api_view(['POST'])

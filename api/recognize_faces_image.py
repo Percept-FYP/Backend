@@ -28,13 +28,14 @@ def func(img):
             os.path.join(BASE_DIR, 'static\\media\\')+str(img))
     else:
           image = cv2.imread(
-            os.path.join(BASE_DIR, 'static\\images\\syed.png'))
+            os.path.join(BASE_DIR, 'static\\images\\sukesh.png'))
     # image = cv2.imread(
     #     "D:/FYP/face-recognition-opencv/examples/bg1.jpg"  )
 
     # D:\FYP\face-recognition-opencv\examples
 
     # D:\FYP\main\backend\_backend\static\images\Images
+    
 
     rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
@@ -89,6 +90,7 @@ def func(img):
 
     # show the output image
 
-    cv2.imshow("Image", image)
+    # cv2.imshow("Image", image)
     cv2.waitKey(0)
     return names
+    

@@ -12,14 +12,15 @@ class User(AbstractUser):
     role = models.TextField(max_length=40, null=False, default="student")
     username = models.TextField(max_length=40, null=True, default="user name")
     email = models.EmailField(_('email address'), unique=True)
-    image = models.ImageField(upload_to="Images", null=True)
-    phone = models.IntegerField(max_length=10, null=True)
+    image = models.ImageField(upload_to="Images", null=True,blank=True)
+    phone = models.IntegerField(max_length=10, null=True,blank=True)
     REQUIRED_FIELDS = ['email']
 
 
 class Academic_info(models.Model):
-    semester = models.TextField(max_length=8, null=False)
-    branch = models.TextField(max_length=20, null=False, unique=True)
+    semester = models.TextField(max_length=8, null=True)
+    branch = models.TextField(max_length=20, null=True)
+    
 
     def __str__(self):
     
@@ -28,7 +29,7 @@ class Academic_info(models.Model):
 
 class Student(models.Model):
     user = models.OneToOneField(
-        User, on_delete=models.CASCADE, null=True)
+        User, on_delete=models.CASCADE, null=True,blank=True)
     usn = models.TextField(max_length=30, null=False, unique=True)
     name = models.TextField(max_length=30, default="student_name", null=True)
     academic_info = models.ForeignKey(
