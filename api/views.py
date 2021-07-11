@@ -37,6 +37,7 @@ def register(request):
 def user_details(request):
     id = request.data['user_id']
     first_name = request.data['first_name']
+    profile = request.data['profile_image']
     last_name = request.data['last_name']
     role = request.data['role']
     phone = request.data['phone']
@@ -51,6 +52,7 @@ def user_details(request):
     except:
         usn = "null"
     user = User.objects.get(id=id)
+    user.image = profile
     user.first_name = first_name
     user.last_name = last_name
     user.role = role
@@ -86,6 +88,7 @@ def post(request):
         for e in Student.objects.all().order_by("id"):
             list_all.append(e.usn)
         img = CLASS.image
+        print(img)
         file = CLASS.subject.attendance_file
         present_list = func(img)
         print(present_list)
@@ -333,9 +336,9 @@ def attendance_overview(request):
             percentage = 0
         result = {
             "subject": str(subject),
-            "classes attended":  present_count,
-            "classes taken": all,
-            "%": round(percentage, 2)
+            "classes_attended":  present_count,
+            "classes_taken": all,
+            "percentage": round(percentage, 2)
         }
         result_set.append(result)
     attendances_overview = []

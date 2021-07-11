@@ -67,6 +67,11 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         data.update({'user': self.user.username})
         data.update({'id': self.user.id})
         data.update({'role': self.user.role})
+        data.update({'profile_image': str(self.user.image) })
+        data.update({'first_name': self.user.first_name})
+        data.update({'last_name': self.user.last_name})
+        data.update({'email': self.user.email})
+
 
         return data
 
@@ -76,8 +81,9 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
         # Add custom claims
         token['role'] = user.role
+      
         # ...
-
+        print(token)
         return token
 
 

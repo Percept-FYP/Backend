@@ -14,7 +14,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 def func(img):
     # construct the argument parser and parse the arguments
     print(str(img))
-
+    print("hola")
     # load the known faces and embeddings
     print("[INFO] loading encodings...")
     data = pickle.loads(
@@ -23,10 +23,10 @@ def func(img):
     # load the input image and convert it from BGR to RGB
     # image = cv2.imread(
     #     "D:/FYP/main/backend/_backend/static/images" + str(img) )
-    if img != "":
+    if img !="":
         print("image", img)
         image = cv2.imread(
-            os.path.join(BASE_DIR, 'static\\images\\')+str(img))
+            os.path.join(BASE_DIR, 'static\\media\\')+str(img))
     else:
         print("smh")
         image = cv2.imread(
@@ -45,7 +45,7 @@ def func(img):
     # for each face
     print("[INFO] recognizing faces...")
     boxes = face_recognition.face_locations(
-        rgb, model="cnn")
+        rgb, model="hog")
     encodings = face_recognition.face_encodings(rgb, boxes)
 
     # initialize the list of names for each face detected

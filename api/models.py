@@ -29,7 +29,15 @@ class User(AbstractUser):
     image = models.ImageField(upload_to="Images", null=True)
     phone = models.IntegerField(null=True)
     REQUIRED_FIELDS = ['email']
+    
+    @property
+    def imageURL(self):
+        try:
 
+            url = self.image.url
+        except:
+            url = ''
+        return url
 
 class Student(models.Model):
     user = models.OneToOneField(
