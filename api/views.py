@@ -313,6 +313,12 @@ def subject_create(request):
     subject_code = request.data['subject_code']
     sem = request.data['sem']
     branch = request.data['branch']
+    # file = openpyxl.load_workbook(
+    #     'D:\\fyp\\Backend\\static\\media\\records\\somefile1.xlsx')
+    # filename = 'D:\\fyp\\Backend\\static\\media\\records\\' + subject_code + '.xlsx'
+    # file.save(filename)
+    # file.close()
+    # f = open(filename)
     subject = Subject.objects.create(teacher=Teacher,
                                      subject_name=subject_name, subject_code=subject_code, academic_info=Academic_info.objects.get(branch=branch))
     subject.academic_info.semester = sem
