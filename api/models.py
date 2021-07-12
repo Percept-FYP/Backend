@@ -68,6 +68,7 @@ class Subject(models.Model):
     academic_info = models.ForeignKey(
         Academic_info, null=True, on_delete=models.CASCADE)
     subject_name = models.CharField(max_length=40, null=True)
+
     subject_code = models.CharField(max_length=40, null=False, unique=True)
     attendance_file = models.FileField(
         upload_to="records", null=True, default='records/somefile1.xlsx')
@@ -102,6 +103,8 @@ class Class(models.Model):
     subject = models.ForeignKey(
         Subject, null=True, on_delete=models.CASCADE)
     image = models.ImageField(upload_to="Images", null=True)
+    image1 = models.ImageField(upload_to="Images", null=True)
+    image2 = models.ImageField(upload_to="Images", null=True)
 
     def __str__(self):
         return f"{self.id}"+f"_{self.subject.subject_code}"

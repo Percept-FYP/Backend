@@ -280,7 +280,8 @@ def attendance_details(request, cl):
             Attendance = attendance.objects.filter(
                 student=student, Class=CLASS)
             serializer = AttendanceSerializer(Attendance, many=True)
-            attendances.append(serializer.data)
+            attendances = attendances + serializer.data
+        print(attendances)
         return Response(attendances)
 
     elif request.method == 'POST':
@@ -293,8 +294,8 @@ def attendance_details(request, cl):
             Attendance = attendance.objects.filter(
                 student=student, Class=CLASS)
             serializer = AttendanceSerializer(Attendance, many=True)
-            attendances.append(serializer.data)
-
+            attendances = attendances + serializer.data
+        print(attendances)
         return Response(attendances, status=status.HTTP_200_OK)
 
 
