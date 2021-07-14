@@ -6,6 +6,7 @@ import face_recognition
 import argparse
 import pickle
 import cv2
+from PIL import Image
 import os
 from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -13,12 +14,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 def func(img):
     # construct the argument parser and parse the arguments
-    print(str(img))
+    print("image", str(img))
 
     # load the known faces and embeddings
     print("[INFO] loading encodings...")
     data = pickle.loads(
-        open(os.path.join(BASE_DIR, 'api/encodings_fyp.pickle'), "rb").read())
+        open(os.path.join(BASE_DIR, 'api/encodings_new.pickle'), "rb").read())
 
     # load the input image and convert it from BGR to RGB
     # image = cv2.imread(
@@ -27,70 +28,92 @@ def func(img):
         print("image", img)
         image = cv2.imread(
             os.path.join(BASE_DIR, 'static\\images\\')+str(img))
+
     else:
         print("smh")
         image = cv2.imread(
-            os.path.join(BASE_DIR, 'static\\media\\Images\\supreetha.png'))
-    # image = cv2.imread(
-    #     "D:/FYP/face-recognition-opencv/examples/bg1.jpg"  )
+            os.path.join(BASE_DIR, 'static\\media\\Images\\tejas.PNG'))
 
-    # D:\FYP\face-recognition-opencv\examples
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    print(gray)
+    # Load the cascade
+    face_cascade = cv2.CascadeClassifier(os.path.join(
+        BASE_DIR, 'api\\haarcascade_frontalface_alt2.xml'))
 
-    # D:\FYP\main\backend\_backend\static\images\Images
-
-    rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-
-    # detect the (x, y)-coordinates of the bounding boxes corresponding
-    # to each face in the input image, then compute the facial embeddings
-    # for each face
-    print("[INFO] recognizing faces...")
-    boxes = face_recognition.face_locations(
-        rgb, model="cnn")
-    encodings = face_recognition.face_encodings(rgb, boxes)
-
-    # initialize the list of names for each face detected
+    # Detect faces
+    faces = face_cascade.detectMultiScale(gray, 1.1, 4)
+    count = 0
     names = []
+    # Draw rectangle around the faces and crop the faces
+    for (x, y, w, h) in faces:
+        cv2.rectangle(image, (x, y), (x+w, y+h), (0, 0, 255), 2)
+        faces = image[y:y + h, x:x + w]
+        im = Image.fromarray(faces)
+        # im.show('face')
+        # cv2.imshow("face", faces)
 
-    # loop over the facial embeddings
-    for encoding in encodings:
-        # attempt to match each face in the input image to our known
-        # encodings
-        matches = face_recognition.compare_faces(
-            data["encodings"], encoding, tolerance=0.5)
-        name = "Unknown"
+        cv2.imwrite('face.jpg', faces)
 
-        # check to see if we have found a match
-        if True in matches:
-            # find the indexes of all matched faces then initialize a
-            # dictionary to count the total number of times each face
-            # was matched
-            matchedIdxs = [i for (i, b) in enumerate(matches) if b]
-            counts = {}
+        # Display the output
+        # cv2.imwrite('detcted.jpg', image)
+        # cv2.imshow('img', image)
+        # # cv2.waitKey()
+        im = cv2.imread('face.jpg')
+        rgb = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
 
-            # loop over the matched indexes and maintain a count for
-            # each recognized face face
-            for i in matchedIdxs:
-                name = data["names"][i]
-                counts[name] = counts.get(name, 0) + 1
+        # detect the (x, y)-coordinates of the bounding boxes corresponding
+        # to each face in the input image, then compute the facial embeddings
+        # for each face
+        print("[INFO] recognizing faces...")
+        boxes = face_recognition.face_locations(rgb, model="cnn")
+        encodings = face_recognition.face_encodings(rgb, boxes)
 
-            # determine the recognized face with the largest number of
-            # votes (note: in the event of an unlikely tie Python will
-            # select first entry in the dictionary)
-            name = max(counts, key=counts.get)
+        # initialize the list of names for each face detected
 
-        # update the list of names
-        names.append(name)
+        # loop over the facial embeddings
+        for encoding in encodings:
+            # attempt to match each face in the input image to our known
+            # encodings
+            matches = face_recognition.compare_faces(
+                data["encodings"], encoding, tolerance=0.48)
+            name = "Unknown"
 
-    # loop over the recognized faces
-    for ((top, right, bottom, left), name) in zip(boxes, names):
-        # draw the predicted face name on the image
-        cv2.rectangle(image, (left, top), (right, bottom), (0, 255, 0), 2)
-        y = top - 15 if top - 15 > 15 else top + 15
-        cv2.putText(image, name, (left, y), cv2.FONT_HERSHEY_SIMPLEX,
-                    0.75, (0, 255, 0), 2)
+            # check to see if we have found a match
+            if True in matches:
+                # find the indexes of all matched faces then initialize a
+                # dictionary to count the total number of times each face
+                # was matched
+                matchedIdxs = [i for (i, b) in enumerate(matches) if b]
+                counts = {}
 
-    # show the output image
+                # loop over the matched indexes and maintain a count for
+                # each recognized face face
+                for i in matchedIdxs:
+                    name = data["names"][i]
+                    counts[name] = counts.get(name, 0) + 1
 
-    cv2.imshow("Image", image)
-    cv2.waitKey(0)
+                # determine the recognized face with the largest number of
+                # votes (note: in the event of an unlikely tie Python will
+                # select first entry in the dictionary)
+                name = max(counts, key=counts.get)
+
+            # update the list of names
+            names.append(name)
+
+        # loop over the recognized faces
+        for ((top, right, bottom, left), name) in zip(boxes, names):
+            # draw the predicted face name on the image
+            cv2.rectangle(im, (left, top), (right, bottom), (0, 255, 0), 2)
+            y = top - 15 if top - 15 > 15 else top + 15
+            cv2.putText(im, name, (left, y), cv2.FONT_HERSHEY_SIMPLEX,
+                        0.75, (0, 255, 0), 2)
+
+        # show the output image
+        count = count + 1
+
+        # cv2.imshow("Image", im)
+
+        cv2.waitKey(0)
+
+    cv2.imwrite('img.jpg', image)
     return names

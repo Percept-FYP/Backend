@@ -6,6 +6,7 @@ import os
 import openpyxl
 from pathlib import Path
 from django.db.models.constraints import UniqueConstraint
+from django.core.exceptions import ValidationError
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
@@ -88,16 +89,24 @@ class Subject(models.Model):
 class Time_table(models.Model):
     day = models.IntegerField(max_length=20, null=True)
     slot = models.IntegerField(max_length=15, null=True)
-    time = "10-11"
+    subject = models.ForeignKey(
+        Subject, null=True, on_delete=models.CASCADE)
 
     class meta:
-        UniqueConstraint(fields=['day', 'slot'], name='unique_slot')
+        unique_together = [['day', 'slot']]
+
+    def save(self, *args, **kwargs):
+        # Checking for duplicate requests
+        try:
+            time_table = Time_table.objects.get(
+                day=self.day, slot=self.slot, subject=self.subject)
+            raise ValidationError('Duplicate Value', code='invalid')
+        except self.DoesNotExist:
+            super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.subject.academic_info}"
 
-
-#
 
 class Class(models.Model):
     subject = models.ForeignKey(
@@ -105,15 +114,15 @@ class Class(models.Model):
     image = models.ImageField(upload_to="Images", null=True)
     image1 = models.ImageField(upload_to="Images", null=True)
     image2 = models.ImageField(upload_to="Images", null=True)
+    time = models.DateTimeField(auto_now_add=True, null=True)
 
     def __str__(self):
-        return f"{self.id}"+f"_{self.subject.subject_code}"
+        return f"{self.subject.subject_code}" + f" {self.time}"
 
 
 class attendance(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     attend = models.CharField(max_length=40, default="absent", null=True)
-    time = models.DateTimeField(auto_now_add=True, null=True)
     Class = models.ForeignKey(Class, on_delete=models.DO_NOTHING, null=True)
 
     def __str__(self):

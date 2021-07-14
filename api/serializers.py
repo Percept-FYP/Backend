@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import attendance, teacher, Class, attendance, Student, Subject, User
+from .models import attendance, teacher, Class, attendance, Student, Subject, User, Time_table
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -21,10 +21,19 @@ class SubjectSerializer(serializers.ModelSerializer):
 
 class AttendanceSerializer(serializers.ModelSerializer):
     student = serializers.StringRelatedField()
+    time = serializers.ReadOnlyField(source='Class.time')
 
     class Meta:
         model = attendance
-        fields = ["student", 'attend', 'time', "id"]
+        fields = ["student", 'attend',  "id", 'time']
+
+
+class Time_tableSerializer(serializers.ModelSerializer):
+    subject = serializers.StringRelatedField()
+
+    class Meta:
+        model = Time_table
+        fields = ["slot", 'day',  "subject"]
 
 
 class ClassSerializer(serializers.ModelSerializer):
@@ -32,7 +41,7 @@ class ClassSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Class
-        fields = ['subject', "image", "id", 'attendance_set']
+        fields = ['subject', "image", 'time', "id", 'attendance_set']
 
     def create(self, validated_data):
         attendances_data = validated_data.pop('attendance_set')
@@ -67,7 +76,10 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         data.update({'user': self.user.username})
         data.update({'id': self.user.id})
         data.update({'role': self.user.role})
-
+        data.update({'profile_image': str(self.user.image)})
+        data.update({'first_name': self.user.first_name})
+        data.update({'last_name': self.user.last_name})
+        data.update({'email': self.user.email})
         return data
 
     @classmethod

@@ -5,7 +5,7 @@ from django.http import JsonResponse
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, DjangoMultiPartParser
 from rest_framework.decorators import api_view
-from api.serializers import AttendanceSerializer, ClassSerializer, RegisterSerializer, SubjectsSerializer
+from api.serializers import AttendanceSerializer, ClassSerializer, RegisterSerializer, SubjectsSerializer, Time_tableSerializer
 from rest_framework.decorators import api_view, permission_classes, parser_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from api.models import *
@@ -87,8 +87,9 @@ def post(request):
             list_all.append(e.usn)
         img = CLASS.image
         file = CLASS.subject.attendance_file
+        print(file)
         present_list = func(img)
-        print(present_list)
+        print("present_list", present_list)
         abs_list = list(set(list_all) - set(present_list)) + \
             list(set(present_list) - set(list_all))
         class_na = data["class_name"]
@@ -114,6 +115,7 @@ def post(request):
             Class=id).order_by("student")
         pth = os.path.join(BASE_DIR, "static\\media\\")+str(file)
         p = pth.replace("/", "\\")
+
         filename = str(CLASS.subject)
 
         exl = p.replace("somefile1", filename)
@@ -170,6 +172,7 @@ def update(request, cl):
     # attendances = attendance.objects.filter(Class=cl).delete()
     attendancse = request.data['attendance_set']
     clas = Class.objects.get(id=cl)
+    file = clas.subject.attendance_file
     # serializer = ClassSerializer(instance=clas, data=request.data)
     for atd in attendancse:
         id = atd['id']
@@ -186,8 +189,16 @@ def update(request, cl):
             present_list.append(i.student.usn)
         for e in Student.objects.all():
             list_all.append(e.usn)
-        workbook1 = openpyxl.load_workbook(
-            'D:/FYP/backend/DB.xlsx')
+        print(list_all)
+        pth = os.path.join(BASE_DIR, "static\\media\\")+str(file)
+        p = pth.replace("/", "\\")
+
+        filename = str(clas.subject)
+
+        exl = p.replace("somefile1", filename)
+        print(exl)
+
+        workbook1 = openpyxl.load_workbook(exl)
         worksheet1 = workbook1['Sheet1']
         # get the number of columns filled
         ncol = worksheet1.max_column
@@ -197,7 +208,7 @@ def update(request, cl):
 
         # Get the currennt date
         today = datetime.date.today().strftime("%d-%m-%Y")
-        wbkName = 'DB.xlsx'
+        wbkName = exl
         wbk = openpyxl.load_workbook(wbkName)
 
         # Loop through the usn and write to the column 1
@@ -211,12 +222,12 @@ def update(request, cl):
         # Check the result names and assign the attendance in the excel sheet
         for wks in wbk.worksheets:
             i = 0
-            wks.cell(row=i+1, column=ncol+1).value = today
+            wks.cell(row=i+1, column=ncol).value = today
             while i < len(list_all):
                 if list_all[i] in present_list:
-                    wks.cell(row=i+2, column=ncol+1).value = "Present"
+                    wks.cell(row=i+2, column=ncol).value = "Present"
                 else:
-                    wks.cell(row=i+2, column=ncol+1).value = "Absent"
+                    wks.cell(row=i+2, column=ncol).value = "Absent"
                 i += 1
 
         # Save the workbook
@@ -342,3 +353,104 @@ def attendance_overview(request):
     attendances_overview = []
 
     return Response(result_set)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def attendance_filter(request):
+    date = request.data['date']
+    Sub = request.data['subject']
+    user = request.user
+    student = Student.objects.get(user=user)
+    Clasess = Class.objects.filter(
+        subject=Subject.objects.get(subject_code=Sub), time__date=date)
+    attendances = []
+    for CLASS in Clasess:
+        Attendance = attendance.objects.filter(
+            student=student, Class=CLASS)
+        serializer = AttendanceSerializer(Attendance, many=True)
+        attendances = attendances + serializer.data
+    print(attendances)
+    return Response(attendances)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def attendance_filter(request):
+    user = request.user
+    student = Student.objects.get(user=user)
+    Academic_info = student.Academic
+    Clasess = Class.objects.filter(
+        subject=Subject.objects.get(subject_code=Sub), time__date=date)
+    attendances = []
+    for CLASS in Clasess:
+        Attendance = attendance.objects.filter(
+            student=student, Class=CLASS)
+        serializer = AttendanceSerializer(Attendance, many=True)
+        attendances = attendances + serializer.data
+    print(attendances)
+    return Response(attendances)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def time_table(request):
+    user = request.user
+    if user.role == "student":
+        student = Student.objects.get(user=user)
+        academic_info = student.academic_info.id
+        print("academic", academic_info)
+        subjects = Subject.objects.filter(academic_info=academic_info)
+        time_table = []
+        for subject in subjects:
+            print(subject)
+            time_tables = Time_table.objects.filter(subject=subject)
+            serializer = Time_tableSerializer(time_tables, many=True)
+            print(serializer.data)
+            time_table = time_table + serializer.data
+        print(time_table)
+        return Response(time_table)
+
+    else:
+        id = user.id
+        Teacher = teacher.objects.get(user=id)
+        subjects = Subject.objects.filter(teacher=Teacher)
+        time_table = []
+        for subject in subjects:
+            print(subject)
+            time_tables = Time_table.objects.filter(subject=subject)
+            serializer = Time_tableSerializer(time_tables, many=True)
+            print(serializer.data)
+            time_table = time_table + serializer.data
+        print(time_table)
+        return Response(time_table)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def recent_class(request):
+    id = request.user.id
+    Teacher = teacher.objects.get(user=id)
+    print("teacher", Teacher)
+    recent_class = Class.objects.filter(subject__teacher__user=id).last()
+    print("recent_Class", recent_class)
+    present_count = attendance.objects.filter(
+        Class=recent_class, attend="present").count()
+    print("p", present_count)
+
+    absent_count = attendance.objects.filter(
+        Class=recent_class, attend="absent").count()
+    print("a", absent_count)
+    percentage = (present_count/(present_count+absent_count))*100
+    print("percentage", percentage)
+    return Response(percentage)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def teacher_schedule(request):
+    day = request.data['day']
+    id = request.user.id
+    schedule = Time_table.objects.filter(day=day, subject__teacher__user=id)
+    serializer = Time_tableSerializer(schedule, many=True)
+    return Response(serializer.data)
