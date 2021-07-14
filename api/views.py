@@ -75,8 +75,17 @@ def user_details(request):
 @permission_classes([IsAuthenticated])
 def post(request):
     data = request.data
+    try:
+        image1 = data['image1']
+    except:
+        image1 = ""
+
+    try:
+        image2 = data['image1']
+    except:
+        image2 = ""
     CLASS = Class.objects.create(subject=Subject.objects.get(
-        subject_code=data["class_name"]), image=data["image"], image1=data["image1"], image2=data["image2"])
+        subject_code=data["class_name"]), image=data["image"], image1=image1, image2=image2)
     id = CLASS.id
     serializer = ClassSerializer(CLASS)
     if serializer:
