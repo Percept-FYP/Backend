@@ -32,7 +32,7 @@ def func(img):
     else:
         print("smh")
         image = cv2.imread(
-            os.path.join(BASE_DIR, 'static\\media\\Images\\tejas.PNG'))
+            os.path.join(BASE_DIR, 'static\\media\\Images\\supreetha.PNG'))
 
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     print(gray)

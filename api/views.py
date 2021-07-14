@@ -76,8 +76,7 @@ def user_details(request):
 def post(request):
     data = request.data
     CLASS = Class.objects.create(subject=Subject.objects.get(
-        subject_code=data["class_name"]), image=data["image"])
-    imagee = request.data["image"]
+        subject_code=data["class_name"]), image=data["image"], image1=data["image1"], image2=data["image2"])
     id = CLASS.id
     serializer = ClassSerializer(CLASS)
     if serializer:
@@ -85,10 +84,16 @@ def post(request):
         list_all = []
         for e in Student.objects.all().order_by("id"):
             list_all.append(e.usn)
-        img = CLASS.image
+        images = []
+        images.append(CLASS.image)
+        images.append(CLASS.image1)
+        images.append(CLASS.image2)
+
         file = CLASS.subject.attendance_file
         print(file)
-        present_list = func(img)
+        present_list = []
+        for img in images:
+            present_list = present_list + func(img)
         print("present_list", present_list)
         abs_list = list(set(list_all) - set(present_list)) + \
             list(set(present_list) - set(list_all))

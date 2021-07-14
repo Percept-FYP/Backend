@@ -7,7 +7,10 @@
 
 {"teacher":"tejas",
     "class_name":"17CO18",
-    "image":""}
+    "image":"",
+     "image1":"",
+      "image2":""	 
+	}
 
 
 
@@ -62,3 +65,6 @@
         }
     ]
 }
+
+
+ 192.168.0.177
