@@ -33,7 +33,7 @@ class Time_tableSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Time_table
-        fields = ["slot", 'day',  "subject"]
+        fields = ["slot", 'day',  "subject","start_time","end_time"]
 
 
 class ClassSerializer(serializers.ModelSerializer):

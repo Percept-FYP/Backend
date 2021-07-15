@@ -30,7 +30,10 @@ class User(AbstractUser):
     image = models.ImageField(upload_to="Images", null=True)
     phone = models.IntegerField(null=True)
     REQUIRED_FIELDS = ['email']
+    dept = models.CharField(max_length=40, null=True, default="")
 
+    def __str__(self):
+        return f"{self.email}"
 
 class Student(models.Model):
     user = models.OneToOneField(
@@ -60,7 +63,7 @@ class teacher(models.Model):
         max_length=40, unique=False, default="no designation")
 
     def __str__(self):
-        return f"{self.user.username}"
+        return f"{self.user.email}"
 
 
 class Subject(models.Model):
@@ -89,6 +92,8 @@ class Subject(models.Model):
 class Time_table(models.Model):
     day = models.IntegerField(max_length=20, null=True)
     slot = models.IntegerField(max_length=15, null=True)
+    start_time =  models.CharField(max_length=40, null=True)
+    end_time =  models.CharField(max_length=40, null=True)
     subject = models.ForeignKey(
         Subject, null=True, on_delete=models.CASCADE)
 
